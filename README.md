@@ -1,5 +1,25 @@
 [![Torii Build Status](https://circleci.com/gh/Vestorly/torii.png?circle-token=9bdd2f37dbcb0be85f82a6b1ac61b9333b68625b "Torii Build Status")](https://circleci.com/gh/Vestorly/torii) [![Ember Observer Score](http://emberobserver.com/badges/torii.svg)](http://emberobserver.com/addons/torii)
 
+# SocialCode Torii override to not use localStorage and fix bugs (on Torii v 0.8.4)
+
+This was done to support Safari private browser pre-v11. Changes also include other bug fixes, which may have been fixed in Torii upstream after v0.8.4.
+
+1. Environment config for Torii now requires an additional key: `allowedRedirectPaths`
+
+```JavaScript
+      torii: {
+        providers: {
+          //torii provider config. See Torii docs
+        },
+        allowedRedirectPaths: [
+          //string list of redirect paths your app will use for torii authentication
+        ]
+      }
+```
+
+2. Use `torii/mixins/application-route-mixin` in your application route for authentication redirect handling. (If using HAK, this is already mixed into HAK's application route mixin).
+
+
 # Compatibility Matrix
 
 |  Torii    | Ember   | Ember-Data         |
@@ -407,7 +427,7 @@ export default Ember.Object.extend({
   // Create a new authorization.
   // When your code calls `this.get('torii').open('geocities', options)`,
   // the `options` will be passed to this provider's `open` method.
-  
+
   open: function(options) {
     return new Ember.RSVP.Promise(function(resolve, reject){
       // resolve with an authorization object
@@ -460,7 +480,7 @@ export default Ember.Route.extend({
         username: username,
         password: password
       };
-      
+
       this.get('torii').open(providerName, options).then(function(authorization){
         // authorization as returned by the provider
         route.somethingWithGeocitiesToken(authorization.sessionToken);
